@@ -1,0 +1,11 @@
+setcompatiblemode 0x00020000;
+
+// 開始位置を記録
+#start_x = x;
+#start_y = y;
+
+replaceallquick " +\n", "\n", regular, nohilight, nocasesense;
+
+moveto #start_x, #start_y;
+
+

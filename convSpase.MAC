@@ -1,0 +1,28 @@
+setcompatiblemode 0x00020000;
+
+// 開始位置を記録
+#start_x = x;
+#start_y = y;
+
+replaceallquick "    ", "\t", regular, nohilight, nocasesense;
+
+#space_cnt = 3;
+while( #space_cnt > 0 ){
+	
+	$space = "";
+	#tmp = #space_cnt;
+	while( #tmp > 0 ){
+		$space = $space + " ";
+		
+		#tmp = #tmp - 1;
+	}
+	
+	replaceallquick "\t" + $space, "\t\t", regular, nohilight, nocasesense;
+	
+	#space_cnt = #space_cnt - 1;
+}
+
+replaceallquick " +//", "\t//", regular, nohilight, nocasesense;
+
+moveto #start_x, #start_y;
+

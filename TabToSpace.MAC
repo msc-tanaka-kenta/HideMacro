@@ -1,0 +1,31 @@
+setcompatiblemode 0x00020000;
+
+// 開始位置を記録
+#start_x = x;
+#start_y = y;
+
+// 先頭に移動
+moveto 0, 0;
+
+while( true ){
+	searchdown "\t+", regular, nohilight, nocasesense;
+	if( !result ){
+		break;
+	}
+	#cs_x = x;
+	#cs_y = y;
+	
+	// 検索結果から必要なタブ数を割り出す
+	#tabCount = ( foundendx - foundtopx );
+	
+	$tabStr = "";
+	while( #tabCount > 0 ){
+		$tabStr = $tabStr + " ";
+		#tabCount = #tabCount - 1;
+	}
+	
+	replacedown "\t+", $tabStr, regular, nohilight, nocasesense;
+	
+}
+
+moveto #start_x, #start_y;

@@ -1,0 +1,96 @@
+setcompatiblemode 0x00020000;
+
+// 開始位置を記録
+#start_x = x;
+#start_y = y;
+
+#add = 0;
+moveto 0, y + 1;
+
+// 関数を検索（現在位置から上方向へ。）
+searchup "^\\s*[_a-zA-Z@][^\\(=;:]*[ \\t]+[_a-zA-Z][_a-zA-Z0-9]*(?<!if)\\([^;]*$", nohilight, regular, nocasesense;
+
+if( result ){		// 発見！
+	#add = 7;
+	
+	// 検索した文字列を控えておく
+	$srcText = gettext( seltopx, seltopy, selendx, selendy );
+	
+	moveto 0, y;
+	
+	// 戻り値
+	// 引数
+	
+	insert "//======================================================================\n";
+	// 関数名 (ここに来てる時点で取得失敗はありえないので、対応してない。)
+	#pos = strstr( $srcText, "(" );
+	$tmp = leftstr( $srcText, #pos );
+	$tmp = rightstr( $tmp, strlen( $tmp ) - strrstr( $tmp, " " ) - 1 );
+	insert "// " + $tmp + "\n";
+	insert "//----------------------------------------------------------------------\n";
+	insert "// 引数\n";
+	// 引数
+	$tmp = rightstr( $srcText, strlen( $srcText ) - strstr( $srcText, "(" ) - 1 );
+	$tmp = leftstr( $tmp, strstr( $tmp, ")" ) - 1 );
+	
+	if( strstr( $tmp, "void" ) != -1 ){
+		insert "//  なし\n";
+		#add = #add + 1;
+	}
+	else{
+		#splCnt = split( $tmp, $tmp, ",");
+		#i = 0;
+		while( #i < #splCnt ){
+			call trim $tmp[ #i ];
+			$lst = $$return;
+			#lc = split( $lst, $lst, " ");
+			#j = 0;
+			insert "//  ";
+			while( #j < #lc ){
+				insert $lst[ #j ];
+				#j = #j + 1;
+				if( #j < #lc ){
+					insert "\t";
+				}
+			}
+			insert "\n";
+			#i = #i + 1;
+			#add = #add + 1;
+		}
+	}
+	// 戻り値
+	$tmp = leftstr( $srcText, strstr( $srcText, "(" ) );
+	$tmp = leftstr( $tmp, strrstr( $tmp, " " ) );
+	#size = strrstr( $tmp, " " );
+	if( #size != -1 ){
+		$tmp = rightstr( $tmp, strlen( $tmp ) - #size );
+	}
+	insert "// 戻り値\n";
+	if( strstr( $tmp, "void" ) != -1 ){
+		insert "//  なし\n";
+	}
+	else{
+//		call trim $tmp;
+//		insert "//  " + $$return + "\n";
+		insert "//  " + $tmp + "\n";
+	}
+	
+	insert "//======================================================================\n";
+}
+
+moveto #start_x, #start_y + #add;
+endmacro;
+
+// サブルーチン 空白削除
+trim:
+	$$str = $$1;
+	
+	while( strstr($$str," ") == 0 ){
+		$$str = rightstr( $$str, strlen( $$str ) - 1 );
+	}
+	while( strrstr( $$str," " ) == strlen( $$str ) - 1 ){
+		$$str = leftstr( $$str, strlen( $$str ) - 1 );
+	}
+	
+	return $$str;
+

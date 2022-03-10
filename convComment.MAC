@@ -1,0 +1,33 @@
+setcompatiblemode 0x00020000;
+
+// 開始位置を記録
+#start_x = x;
+#start_y = y;
+
+// 先頭に移動
+moveto 0, 0;
+
+replacedown "/*", "// ", nohilight, nocasesense;
+// /*コメントがなくなるまでループする
+while( result ){
+	#cs_x = x;
+	#cs_y = y;
+
+	replacedown "*/", "" , nohilight, nocasesense;
+	#ce_x = x;
+	#ce_y = y;
+
+	while( #cs_y < #ce_y ){
+		moveto 0, #ce_y;
+		insert "// ";
+		#ce_y = #ce_y - 1;
+	}
+	
+	replacedown "/*", "// ", nohilight, nocasesense;
+}
+
+replaceallquick "// +", "// ", regular, nohilight, nocasesense;
+
+moveto #start_x, #start_y;
+
+
